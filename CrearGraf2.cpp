@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <utility>
 
 using namespace std;
 
@@ -12,9 +14,9 @@ struct edge{    //es un vol
 
 int main ()
 {
-  vector < vector < int >> Entrada; 
+  vector < vector < int > > Entrada; 
   vector < int > Viatge;
- int num;
+  int num;
   while (cin >> num)
     {
       Viatge.push_back (num);   //Entrada[x][0] es el origen
@@ -55,11 +57,11 @@ int main ()
     //ja nomes falta conectar els destins amb els origens adients
   
     bool transbord[size][size];
-   for (int i=0; i<size; i++){
+    for (int i=0; i<size; i++){
        for(int j = 0; j<size; j++){
            transbord[i][j]=false;
        }
-   }
+    }
     
     for(int i = 0; i<size; i++){
         for (int j=0; j<size; j++){
@@ -68,6 +70,7 @@ int main ()
                 nova.final=j+1;
                 nova.min=0;
                 nova.max=1;
+                nova.usat =0;
                 Graf[i+size+1].push_back(nova);
                 transbord[i][j]=true;
             }
@@ -87,6 +90,7 @@ int main ()
                             nova.final=k+1;
                             nova.min=0;
                             nova.max=1;
+                            nova.usat=0;
                             Graf[i+size+1].push_back(nova);
                             transbord[i][k]=true;
                         }

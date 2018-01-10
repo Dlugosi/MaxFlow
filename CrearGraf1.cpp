@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <utility>
 
 using namespace std;
 
@@ -7,14 +9,15 @@ struct edge{    //es un vol
     int final;  //al que esta conectat
     int min;
     int max;
-    int usat; //per l'algorisme
+    bool usat;
+    int ant; //per l'algorisme
 };
 
 int main ()
 {
   vector < vector < int >> Entrada; 
   vector < int > Viatge;
- int num;
+  int num;
   while (cin >> num)
     {
       Viatge.push_back (num);   //Entrada[x][0] es el origen
@@ -36,24 +39,26 @@ int main ()
         nova.final = i+1;
         nova.min = 0;
         nova.max = 1;
-        nova.usat = 0;
+        nova.ant = 0;
+        nova.usat = false;
         Graf[0].push_back(nova);
                                //conectem els origens als destins
         nova.final = i+size+1;
-        nova.min = 1 ;
+        nova.min = 1;
         nova.max = 1;
-        nova.usat = 0;
+        nova.ant = i+1;
+        nova.usat = false;
         Graf[i+1].push_back(nova);
                                 //conectem els destins al sink
         nova.final = sink;
         nova.min=0;
         nova.max=1;
-        nova.usat =0;
+        nova.ant = i+1+size;
+        nova.usat = false;
         Graf[i+size+1].push_back(nova);
     }                           //O(n)
     
     //ja nomes falta conectar els destins amb els origens adients
-  
     
     for(int i = 0; i<size; i++){
         for (int j=0; j<size; j++){
@@ -62,10 +67,63 @@ int main ()
                 nova.final=j+1;
                 nova.min=0;
                 nova.max=1;
+                nova.ant = i+size+1;
+                nova.usat = false;
                 Graf[i+size+1].push_back(nova);
             }
         }
     }               //O(n^2)
+
+
+
+    vector < vector < int > > pilots (size, vector <int> (0));
+    
+    int flow = 0;
+    bool stop = false;
+    while(not stop){
+        vector < pair<int,int> >  pred (Graf.size(), make_pair(-1,-1));   //Representem els edges obligats
+        for(int i = 0; i < size; ++i) pred[1+size+i] = make_pair(1+i, 0);
+        
+        queue <int> q;
+        q.push(0);
+        while(not q.empty()){
+            int curr = q.front();
+
+
+            for(int i = 0; i < Graf[curr].size(); ++i){
+                edge act = Graf[curr][i];
+                if(not act.usat and pred[act.final].first == -1 and act.final != 0 and act.max > act.min){
+                    pred[act.final].first = curr;
+                    pred[act.final].second = i;
+                    if(act.final != sink) q.push(Graf[act.final][0].final); //l'enllacem directament amb el seu desti
+                    else q.push(act.final);
+                }
+            }
+            q.pop();
+        }
+
+
+        if(not (pred[sink].first == -1)){
+            pair <int,int> aux = pred[sink];
+            while(aux.first != -1){
+                pilots[flow].push_back(aux.first);
+                Graf[aux.first][aux.second].min = 1;
+                Graf[aux.first][aux.second].usat = true;
+                aux = pred[aux.first];
+            } 
+        }
+
+        if(pred[sink].first == -1 or flow == size - 1) stop = true;
+        ++flow;
+    }
+    
+    cout << "Flow: " << flow << endl; //imprimir flow i pilots
+    // for(int i = 0; i < flow; ++i){
+    //     cout << pilots[i][pilots[i].size() - 1];
+    //     for(int j = pilots[i].size() - 2; j >= 0; ++j) cout << " " << pilots[i][j];
+    //     cout << endl;
+    // }
+
 }
 
 
