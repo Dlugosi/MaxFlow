@@ -182,6 +182,43 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
 
 }
 
+void volsPilot(vector < vector < edge> >& g, vector<bool>& vis, int u, int &size) {
+    vector <int> aux;
+    int x = u;
+	while(x != sink) {
+        cout << "aixo: " << x << endl;
+		if (not vis[(x-4)/2]) {
+            vis[(x-4)/2] = true;
+            cout <<"aqui" << endl;
+			aux.push_back((x-4)/2+size);
+		}
+		for (int j = 0; j < g[x+size].size(); j++) {
+            cout <<"alla" << endl;
+            cout << "size: " << g[x+size].size() << " j: " << j << endl;
+            cout << "peta: " << g[x+size][j].flow << endl;
+			if (g[x+size][j].flow) {
+				g[x+size][j].flow--;
+				x = g[x+size][j].final;
+				break;
+            }
+            cout <<"mas alla" << endl;
+		}
+	}
+	for (int i = 0; i < aux.size(); i++) {
+		if (i) cout << " ";
+		cout << aux[i];
+	}
+	cout << endl;
+}
+
+void printVols(vector < vector < edge> >& g, int& size) {
+	vector<bool> visit(((g.size()-4)/2),false);
+	for (auto e : g[source]) {
+
+		if (e.flow) volsPilot(g,visit,e.final,size);
+	}
+}
+
 int main ()
 {
 	
@@ -239,7 +276,7 @@ ifstream in("inputs/instance_100_2_1.air",ios::in);
 		}        
 	}
     cout << "Flow: " << millorflow << endl; //imprimir flow i pilots
-	
+	printVols(solucio, size);
 	/*for (int i=0; i<Graf.size(); i++) {
 		for (int j=0; j<Graf[i].size(); j++) {
 			cout << Graf[i][j].final <<" ";
