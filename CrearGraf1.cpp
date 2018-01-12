@@ -145,7 +145,7 @@ ifstream in("test.txt",ios::in);
 		cout <<"viatge es " << Viatge[0] << " "<< Viatge[1] << " "<< Viatge[2] << " "<< Viatge[3] << endl;
     }   //<O(n);
     in.close();
-e = Entrada.size();
+    int size = Entrada.size();
     vector < vector < edge> > Graf (2*size+4);
     sink = (2*size)+1;
     source = 0;
