@@ -1,3 +1,11 @@
+/*
+ *  CrearGraf1.cpp
+ *  
+ *
+ *  Copyright 2018 GrupXdeAlgorismia. Some rights reserved.
+ *
+ */
+
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -15,26 +23,28 @@ struct edge{    //es un vol
 
 int main ()
 {
-  vector < vector < int >> Entrada; 
-  vector < int > Viatge;
-  int num;
-  while (cin >> num)
+	vector < vector < int > > Entrada; 
+	int num;
+	while (cin >> num)
     {
-      Viatge.push_back (num);   //Entrada[x][0] es el origen
-      cin >> num;
-      Viatge.push_back (num);   //Entrada[x][1] es el desti
-      cin >> num;
-      Viatge.push_back (num);   //Entrada[x][2] es el temps de sortida
-      cin >> num;
-      Viatge.push_back (num);   //Entrada[x][3] es le temps de arrivada
-      Entrada.push_back (Viatge);
+		vector < int > Viatge (4);
+		Viatge[0] = num;   //Entrada[x][0] es el origen
+		cin >> num;
+		Viatge[1] = num;   //Entrada[x][1] es el desti
+		cin >> num;
+		Viatge[2] = num;   //Entrada[x][2] es el temps de sortida
+		cin >> num;
+		Viatge[3] = num;   //Entrada[x][3] es le temps de arrivada
+		//for	(int i=0; i<Viatge.size();i++) cout << Viatge[i] << "  ";
+		//cout << endl;
+		Entrada.push_back (Viatge);
     }                           //<O(n);
     int size = Entrada.size();
-    vector < vector < edge>> Graf (2*size+2);
+    vector < vector < edge> > Graf (2*size+2);
     int sink = (2*size)+1;
-
+	
     for(int i=0; i<size; i++){  
-                                //conectem el font als origens
+		//conectem el font als origens
         edge nova;
         nova.final = i+1;
         nova.min = 0;
@@ -42,14 +52,14 @@ int main ()
         nova.ant = 0;
         nova.usat = false;
         Graf[0].push_back(nova);
-                               //conectem els origens als destins
+		//conectem els origens als destins
         nova.final = i+size+1;
         nova.min = 1;
         nova.max = 1;
         nova.ant = i+1;
         nova.usat = false;
         Graf[i+1].push_back(nova);
-                                //conectem els destins al sink
+		//conectem els destins al sink
         nova.final = sink;
         nova.min=0;
         nova.max=1;
@@ -62,7 +72,8 @@ int main ()
     
     for(int i = 0; i<size; i++){
         for (int j=0; j<size; j++){
-            if (((Entrada[i][3]+15)<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
+
+            if ((Entrada[i][3]+15<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
                 edge nova;
                 nova.final=j+1;
                 nova.min=0;
@@ -73,9 +84,14 @@ int main ()
             }
         }
     }               //O(n^2)
-
-
-
+	
+	/*for (int i=0; i<Graf.size(); i++) {
+		for (int j=0; j<Graf[i].size(); j++) {
+			cout << Graf[i][j].final <<" ";
+		}
+		cout << endl;
+	}*/
+	
     vector < vector < int > > pilots (size, vector <int> (0));
     
     int flow = 0;
@@ -88,8 +104,8 @@ int main ()
         q.push(0);
         while(not q.empty()){
             int curr = q.front();
-
-
+			
+			
             for(int i = 0; i < Graf[curr].size(); ++i){
                 edge act = Graf[curr][i];
                 if(not act.usat and pred[act.final].first == -1 and act.final != 0 and act.max > act.min){
@@ -101,8 +117,8 @@ int main ()
             }
             q.pop();
         }
-
-
+		
+		
         if(not (pred[sink].first == -1)){
             pair <int,int> aux = pred[sink];
             while(aux.first != -1){
@@ -112,7 +128,7 @@ int main ()
                 aux = pred[aux.first];
             } 
         }
-
+		
         if(pred[sink].first == -1 or flow == size - 1) stop = true;
         ++flow;
     }
@@ -123,7 +139,5 @@ int main ()
     //     for(int j = pilots[i].size() - 2; j >= 0; ++j) cout << " " << pilots[i][j];
     //     cout << endl;
     // }
-
+	
 }
-
-
