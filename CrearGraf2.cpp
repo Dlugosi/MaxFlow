@@ -189,10 +189,9 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
                         if ((transbord[j][k])&&(!transbord[i][k])){
                             transbords=true;
                             edge nova;
-                            nova.final=k+1;
-                            nova.min=0;
-                            nova.max=1;
-                            nova.usat=0;
+                            nova.final=k+4;
+                            nova.flow=0;
+                            nova.capacitat=1;
                             Graf[i+size+4].push_back(nova);
                             transbord[i][k]=true;
                         }
@@ -320,7 +319,4 @@ int main ()
 	float f = clock()-Timestart;
 	cout <<"La execucio ha tardat" <<clock()-Timestart <<"ticks,"<< f/CLOCKS_PER_SEC << "segons"<<endl;
 	
-}
-
-
 }
