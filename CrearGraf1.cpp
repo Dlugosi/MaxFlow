@@ -60,8 +60,8 @@ int main ()
     vector < vector < edge> > Graf (2*size+4);
     sink = (2*size)+1;
     source = 0;
-    supersource = sink*1;
-    supersink = supersource*1
+    supersource = sink+1;
+    supersink = supersource+1;
 	
     for(int i=0; i<size; i++){  
 		//conectem el source als origens
