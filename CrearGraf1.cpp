@@ -128,7 +128,7 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
     for(int i=0; i<size; i++){  
 		//conectem el source als origens
         edge nova;
-        nova.final = i+1;
+        nova.final = i+4;
         nova.capacitat = 1;
         nova.flow = 0;
         Graf[source].push_back(nova);
@@ -139,11 +139,11 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
         nova.final = supersink;
         nova.capacitat = 1;
         nova.flow = 0;
-        Graf[i+1].push_back(nova);
+        Graf[i+4].push_back(nova);
 		
 	    //ara el supersource als destins falta conectar al source
 		
-		nova.final = i+size+1;
+		nova.final = i+size+4;
         nova.capacitat = 1;
         nova.flow = 0;
         Graf[supersource].push_back(nova);
@@ -152,7 +152,7 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
         nova.final = sink;
         nova.capacitat=1;
         nova.flow = 0;
-        Graf[i+size+1].push_back(nova);
+        Graf[i+size+4].push_back(nova);
     }                           //O(n)
     
     //ja nomes falta conectar els destins amb els origens adients
@@ -162,10 +162,10 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
 			
             if ((Entrada[i][3]+15<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
                 edge nova;
-                nova.final=j+1;
+                nova.final=j+4;
                 nova.capacitat=1;
 		        nova.flow=0;
-                Graf[i+size+1].push_back(nova);
+                Graf[i+size+4].push_back(nova);
             }
         }
     }               //O(n^2)
@@ -187,22 +187,16 @@ void volsPilot(vector < vector < edge> >& g, vector<bool>& vis, int u, int &size
     vector <int> aux;
     int x = u;
 	while(x != sink) {
-        cout << "aixo: " << x << endl;
 		if (not vis[(x-4)/2]) {
             vis[(x-4)/2] = true;
-            cout <<"aqui" << endl;
 			aux.push_back((x-4)/2+size);
 		}
 		for (int j = 0; j < g[x+size].size(); j++) {
-            cout <<"alla" << endl;
-            cout << "size: " << g[x+size].size() << " j: " << j << endl;
-            cout << "peta: " << g[x+size][j].flow << endl;
 			if (g[x+size][j].flow) {
 				g[x+size][j].flow--;
 				x = g[x+size][j].final;
 				break;
             }
-            cout <<"mas alla" << endl;
 		}
 	}
 	for (int i = 0; i < aux.size(); i++) {
@@ -243,10 +237,10 @@ int main ()
     in.close();
     int size = Entrada.size();
     vector < vector < edge> > Graf (2*size+4);
-    sink = (2*size)+1;
-    source = 0;
-    supersource = sink+1;
-    supersink = supersource+1;
+    sink = 3;
+    source = 2;
+    supersource = 0;
+    supersink = 1;
 	
     
 	
