@@ -213,19 +213,18 @@ int main ()
 	bool primer = true;
 	int Pmin=0;
 	int Pmax=size;
-	int millorflow;
-	while(Pmax > Pmin){
-		primer = false;
-
-		int valor = (Pmin+Pmax)/2;
+	int millorflow = 0;
+	while(Pmax >= Pmin){
+        
+        int valor = (Pmin+Pmax)/2;
 		
 		edge nova;
         nova.final = supersink;
         nova.capacitat = valor;
         nova.flow = 0;
-        nova.usat = false;
 		if (primer){
-			Graf[sink].push_back(nova);//conectem sink a supersink
+            Graf[sink].push_back(nova);//conectem sink a supersink
+            primer = false;
 		}
 		else {
 			Graf[sink][Graf[sink].size()-1] = nova;
@@ -233,7 +232,6 @@ int main ()
         nova.final = source;
         nova.capacitat = valor;
         nova.flow = 0;
-        nova.usat = false;
 		if (primer){
 			Graf[supersource].push_back(nova);//conectem sink a supersink
 		}
@@ -241,14 +239,13 @@ int main ()
 			Graf[supersource][Graf[supersource].size()-1] = nova;
 		}
 				
-		if (flow(Graf, valor)) { //aixo cal canviarho
+		if ((valor+size) == maxFlowAlgorithm(Graf)) { //aixo cal canviarho
 			Pmax = valor -1;//no volem tornar a provar aquest
 			millorflow = valor;
 			//guardar resposta
 		}
 		else {
 			Pmin = valor+1;
-			
 		}        
 	}
 	
@@ -257,12 +254,9 @@ int main ()
 			cout << Graf[i][j].final <<" ";
 		}
 		cout << endl;
-	}*/
+	}*/    
     
-    int flow = maxFlowAlgorithm(Graf);
-    
-    
-    cout << "Flow: " << flow << endl; //imprimir flow i pilots
+    cout << "Flow: " << millorflow << endl; //imprimir flow i pilots
     // for(int i = 0; i < flow; ++i){
     //     cout << pilots[i][pilots[i].size() - 1];
     //     for(int j = pilots[i].size() - 2; j >= 0; ++j) cout << " " << pilots[i][j];
