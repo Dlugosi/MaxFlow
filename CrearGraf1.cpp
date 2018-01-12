@@ -15,11 +15,16 @@
 
 using namespace std;
 
+int sink;
+int source;
+int supersource;
+int supersink;
+
+
 struct edge{    //es un vol
     int final;  //al que esta conectat
-    int cap;
-    int flow;
-    // bool usat; //per l'algorisme
+    int capacitat;
+	int flow;
 };
 
 void grafAuxiliar(const vector < vector < edge> > & g, vector < vector < edge> > & r) {
@@ -28,8 +33,8 @@ void grafAuxiliar(const vector < vector < edge> > & g, vector < vector < edge> >
             // Edges start with all the flow available.
             edge nova;
             nova.final = g[i][j].final;
-            nova.flow = g[i][j].cap;
-            nova.cap = g[i][j].cap;
+            nova.flow = g[i][j].capacitat;
+            nova.capacitat = g[i][j].capacitat;
 			r[i].push_back(nova);
 		}
 	}
@@ -39,11 +44,11 @@ void maxFlowGraf(const vector < vector < edge> > & r, vector < vector < edge> > 
 	for (int i = 0; i < (int) r.size(); i++) {
 		for (int j = 0; j < (int) r[i].size(); j++) {
 			// If capacity is equal to -1 the edge is not an edge of the genuine vector < vector < edge> >.
-            if (r[i][j].cap != -1){
+            if (r[i][j].capacitat != -1){
                 edge nova;
                 nova.final = r[i][j].final;
-                nova.flow = r[i][j].cap - r[i][j].flow;
-                nova.cap = r[i][j].cap;
+                nova.flow = r[i][j].capacitat - r[i][j].flow;
+                nova.capacitat = r[i][j].capacitat;
                 g[i].push_back(nova);
             }
 		}
@@ -58,14 +63,14 @@ int findPos(vector < vector < edge> >& r, int ini, int end) {
     edge nova;
     nova.final = end;
     nova.flow = 0;
-    nova.cap = -1;
+    nova.capacitat = -1;
 	r[ini].push_back(nova);
 	return r[ini].size()-1;
 }
 
 void augmentaFlow(vector < vector < edge> >& r, const vector <int>& path, int bottleneck) {
-	int act = r.size()-1;//SuperSink
-	while (act != 0) {//SuperSource
+	int act = supersink;
+	while (act != supersource) {
 		int ini = path[act];
 		int p1 = findPos(r,act,ini);
 		r[act][p1].flow += bottleneck;
@@ -82,7 +87,7 @@ int findPath(const vector < vector < edge> >& r, vector <int>& path) {
 	path = vector <int> (r.size(),-1);
 	vector <int> cap(r.size(),0);
 	queue<int> vertexs;
-	vertexs.push(0);//SuperSource
+	vertexs.push(supersource);
 	cap[0] = 5000000;
 	path[0] = -2;
 	while (not vertexs.empty()) {
@@ -94,7 +99,7 @@ int findPath(const vector < vector < edge> >& r, vector <int>& path) {
 			if (capRes > 0 and path[act] == -1) {
 				path[act] = ini;
 				cap[act] = min(cap[ini],capRes);
-				if (act == r.size() - 1) return cap[act]; //SuperSink
+				if (act == supersink) return cap[supersink];
 				vertexs.push(act);
 			}
         }
@@ -124,7 +129,7 @@ int main ()
     ifstream input;
     input.open ("inputs/instance_100_2_1.air");
     if(not input.is_open()) cout << "no s'ha trobat el fitxer" << endl;
-
+	
 	vector < vector < int > > Entrada; 
 	string line;
 	while (not input.eof())
@@ -140,39 +145,47 @@ int main ()
             Viatge[2] = line[4] - '0';   //Entrada[x][2] es el temps de sortida
             // cin >> num;
             Viatge[3] = line[6] - '0';   //Entrada[x][3] es le temps de arrivada
-		//for	(int i=0; i<Viatge.size();i++) cout << Viatge[i] << "  ";
-		//cout << endl;
+			//for	(int i=0; i<Viatge.size();i++) cout << Viatge[i] << "  ";
+			//cout << endl;
             Entrada.push_back (Viatge);
         }
     }   //<O(n);
     input.close();
-                            
+	
     int size = Entrada.size();
-    vector < vector < edge> > Graf (2*size+2);
-    int sink = (2*size)+1;
+    vector < vector < edge> > Graf (2*size+4);
+    sink = (2*size)+1;
+    source = 0;
+    supersource = sink+1;
+    supersink = supersource+1;
 	
     for(int i=0; i<size; i++){  
-		//conectem el font als origens
+		//conectem el source als origens
         edge nova;
         nova.final = i+1;
+        nova.capacitat = 1;
         nova.flow = 0;
-        nova.cap = 1;
-        // nova.ant = 0;
-        // nova.usat = false;
-        Graf[0].push_back(nova);
-		//conectem els origens als destins
-        nova.final = i+size+1;
+        Graf[source].push_back(nova);
+		//no conectem els origens als destins, sino que els transformem en sinks i sources per complir
+		//el lower bound (no queda aresta). Per fer aixo cal un super sink i un super source que rep i dona tot el fluxe
+	    //primer els nous sink(origens) al supersink (falta el sink original) 
+		
+        nova.final = supersink;
+        nova.capacitat = 1;
         nova.flow = 0;
-        nova.cap = 1;
-        // nova.ant = i+1;
-        // nova.usat = false;
         Graf[i+1].push_back(nova);
+		
+	    //ara el supersource als destins falta conectar al source
+		
+		nova.final = i+size+1;
+        nova.capacitat = 1;
+        nova.flow = 0;
+        Graf[supersource].push_back(nova);
+		
 		//conectem els destins al sink
         nova.final = sink;
-        nova.flow=0;
-        nova.cap=1;
-        // nova.ant = i+1+size;
-        // nova.usat = false;
+        nova.capacitat=1;
+        nova.flow = 0;
         Graf[i+size+1].push_back(nova);
     }                           //O(n)
     
@@ -180,18 +193,64 @@ int main ()
     
     for(int i = 0; i<size; i++){
         for (int j=0; j<size; j++){
-
+			
             if ((Entrada[i][3]+15<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
                 edge nova;
                 nova.final=j+1;
-                nova.flow=0;
-                nova.cap=1;
-                // nova.ant = i+size+1;
-                // nova.usat = false;
+                nova.capacitat=1;
+				nova.flow=0;
                 Graf[i+size+1].push_back(nova);
             }
         }
     }               //O(n^2)
+	
+	/*for (int i=0; i<Graf.size(); i++) {
+	 for (int j=0; j<Graf[i].size(); j++) {
+	 cout << Graf[i][j].final <<" ";
+	 }
+	 cout << endl;
+	 }*/
+	bool primer = true;
+	int Pmin=0;
+	int Pmax=size;
+	int millorflow;
+	while(Pmax > Pmin){
+		primer = false;
+
+		int valor = (Pmin+Pmax)/2;
+		
+		edge nova;
+        nova.final = supersink;
+        nova.capacitat = valor;
+        nova.flow = 0;
+        nova.usat = false;
+		if (primer){
+			Graf[sink].push_back(nova);//conectem sink a supersink
+		}
+		else {
+			Graf[sink][Graf[sink].size()-1] = nova;
+		}
+		edge nova;
+        nova.final = source;
+        nova.capacitat = valor;
+        nova.flow = 0;
+        nova.usat = false;
+		if (primer){
+			Graf[supersource].push_back(nova);//conectem sink a supersink
+		}
+		else {
+			Graf[supersource][Graf[supersource].size()-1] = nova;
+		}
+				
+		if (flow(Graf, valor)) { //aixo cal canviarho
+			Pmax = valor -1;//no volem tornar a provar aquest
+			millorflow = valor;
+			//guardar resposta
+		}
+		else {
+			Pmin = valor+1;
+			
+		}          //O(n^2)
 	
 	/*for (int i=0; i<Graf.size(); i++) {
 		for (int j=0; j<Graf[i].size(); j++) {
