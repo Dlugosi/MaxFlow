@@ -189,7 +189,7 @@ void volsPilot(vector < vector < edge> >& g, vector<bool>& vis, int u, int &size
 	while(x != sink) {
 		if (not vis[(x-4)/2]) {
             vis[(x-4)/2] = true;
-			aux.push_back((x-4)/2+size);
+			aux.push_back((x-4)/2);
 		}
 		for (int j = 0; j < g[x+size].size(); j++) {
 			if (g[x+size][j].flow) {
