@@ -224,19 +224,20 @@ int main ()
         nova.flow = 0;
 		if (primer){
             Graf[sink].push_back(nova);//conectem sink a supersink
-            primer = false;
 		}
 		else {
-			Graf[sink][Graf[sink].size()-1] = nova;
-		}
+            Graf[sink][Graf[sink].size()-1] = nova;
+        }
+        
         nova.final = source;
         nova.capacitat = valor;
         nova.flow = 0;
 		if (primer){
-			Graf[supersource].push_back(nova);//conectem sink a supersink
+            Graf[supersource].push_back(nova);//conectem sink a supersink
+            primer = false;
 		}
 		else {
-			Graf[supersource][Graf[supersource].size()-1] = nova;
+            Graf[supersource][Graf[supersource].size()-1] = nova;
 		}
 				
 		if ((valor+size) == maxFlowAlgorithm(Graf)) { //aixo cal canviarho
@@ -248,6 +249,7 @@ int main ()
 			Pmin = valor+1;
 		}        
 	}
+    cout << "Flow: " << millorflow << endl; //imprimir flow i pilots
 	
 	/*for (int i=0; i<Graf.size(); i++) {
 		for (int j=0; j<Graf[i].size(); j++) {
@@ -256,7 +258,6 @@ int main ()
 		cout << endl;
 	}*/    
     
-    cout << "Flow: " << millorflow << endl; //imprimir flow i pilots
     // for(int i = 0; i < flow; ++i){
     //     cout << pilots[i][pilots[i].size() - 1];
     //     for(int j = pilots[i].size() - 2; j >= 0; ++j) cout << " " << pilots[i][j];
