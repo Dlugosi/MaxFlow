@@ -172,6 +172,7 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
                 nova.capacitat=1;
 		        nova.flow=0;
                 Graf[i+size+4].push_back(nova);
+		transbord[i][j]=true;
             }
         }//O(n^2)
 	    //es la unica diferencia amb la versio 1
