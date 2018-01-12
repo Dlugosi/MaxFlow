@@ -15,6 +15,11 @@
 
 using namespace std;
 
+int sink;
+int source;
+int supersource;
+int supersink;
+
 
 struct edge{    //es un vol
     int final;  //al que esta conectat
