@@ -17,11 +17,107 @@ using namespace std;
 
 struct edge{    //es un vol
     int final;  //al que esta conectat
-    int min;
-    int max;
-    bool usat;
-    int ant; //per l'algorisme
+    int cap;
+    int flow;
+    // bool usat; //per l'algorisme
 };
+
+void grafAuxiliar(const vector < vector < edge> > & g, vector < vector < edge> > & r) {
+	for (int i = 0; i < (int)g.size(); i++) {
+		for (int j = 0; j < (int)g[i].size(); j++) {
+            // Edges start with all the flow available.
+            edge nova;
+            nova.final = g[i][j].final;
+            nova.flow = g[i][j].cap;
+            nova.cap = g[i][j].cap;
+			r[i].push_back(nova);
+		}
+	}
+}
+
+void maxFlowGraf(const vector < vector < edge> > & r, vector < vector < edge> > & g) {
+	for (int i = 0; i < (int) r.size(); i++) {
+		for (int j = 0; j < (int) r[i].size(); j++) {
+			// If capacity is equal to -1 the edge is not an edge of the genuine vector < vector < edge> >.
+            if (r[i][j].cap != -1){
+                edge nova;
+                nova.final = r[i][j].final;
+                nova.flow = r[i][j].cap - r[i][j].flow;
+                nova.cap = r[i][j].cap;
+                g[i].push_back(nova);
+            }
+		}
+	}
+}
+
+int findPos(vector < vector < edge> >& r, int ini, int end) {
+	for (int i = 0; i < r[ini].size(); ++i) {
+		if (r[ini][i].final == end) return i;
+    }
+    
+    edge nova;
+    nova.final = end;
+    nova.flow = 0;
+    nova.cap = -1;
+	r[ini].push_back(nova);
+	return r[ini].size()-1;
+}
+
+void augmentaFlow(vector < vector < edge> >& r, const vector <int>& path, int bottleneck) {
+	int act = r.size()-1;//SuperSink
+	while (act != 0) {//SuperSource
+		int ini = path[act];
+		int p1 = findPos(r,act,ini);
+		r[act][p1].flow += bottleneck;
+		int p2 = findPos(r,ini,act);
+		r[ini][p2].flow -= bottleneck;
+
+		act = path[act];
+	}
+}
+
+
+int findPath(const vector < vector < edge> >& r, vector <int>& path) {
+    int bottleneck = 0;
+	path = vector <int> (r.size(),-1);
+	vector <int> cap(r.size(),0);
+	queue<int> vertexs;
+	vertexs.push(0);//SuperSource
+	cap[0] = 5000000;
+	path[0] = -2;
+	while (not vertexs.empty()) {
+		int ini = vertexs.front();
+		vertexs.pop();
+		for (auto e : r[ini]) {
+			int act = e.final;
+			int capRes = e.flow;
+			if (capRes > 0 and path[act] == -1) {
+				path[act] = ini;
+				cap[act] = min(cap[ini],capRes);
+				if (act == r.size() - 1) return cap[act]; //SuperSink
+				vertexs.push(act);
+			}
+        }
+	}
+    return bottleneck;
+}
+
+int maxFlowAlgorithm(vector < vector < edge> > &g){
+    vector < vector < edge> > r(g.size());
+	grafAuxiliar(g,r);
+	vector <int> path;
+    int bottleneck;
+    int maxflow=0;
+	while((bottleneck = findPath(r,path)) > 0) {
+		augmentaFlow(r,path,bottleneck);
+		maxflow += bottleneck;
+	}
+	vector < vector < edge> > g1(g.size());
+	
+	maxFlowGraf(r, g1);
+	g = g1;
+	return maxflow;
+}
 
 int main ()
 {
@@ -59,24 +155,24 @@ int main ()
 		//conectem el font als origens
         edge nova;
         nova.final = i+1;
-        nova.min = 0;
-        nova.max = 1;
-        nova.ant = 0;
-        nova.usat = false;
+        nova.flow = 0;
+        nova.cap = 1;
+        // nova.ant = 0;
+        // nova.usat = false;
         Graf[0].push_back(nova);
 		//conectem els origens als destins
         nova.final = i+size+1;
-        nova.min = 1;
-        nova.max = 1;
-        nova.ant = i+1;
-        nova.usat = false;
+        nova.flow = 0;
+        nova.cap = 1;
+        // nova.ant = i+1;
+        // nova.usat = false;
         Graf[i+1].push_back(nova);
 		//conectem els destins al sink
         nova.final = sink;
-        nova.min=0;
-        nova.max=1;
-        nova.ant = i+1+size;
-        nova.usat = false;
+        nova.flow=0;
+        nova.cap=1;
+        // nova.ant = i+1+size;
+        // nova.usat = false;
         Graf[i+size+1].push_back(nova);
     }                           //O(n)
     
@@ -88,10 +184,10 @@ int main ()
             if ((Entrada[i][3]+15<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
                 edge nova;
                 nova.final=j+1;
-                nova.min=0;
-                nova.max=1;
-                nova.ant = i+size+1;
-                nova.usat = false;
+                nova.flow=0;
+                nova.cap=1;
+                // nova.ant = i+size+1;
+                // nova.usat = false;
                 Graf[i+size+1].push_back(nova);
             }
         }
@@ -103,47 +199,9 @@ int main ()
 		}
 		cout << endl;
 	}*/
-	
-    vector < vector < int > > pilots (size, vector <int> (0));
     
-    int flow = 0;
-    bool stop = false;
-    while(not stop){
-        vector < pair<int,int> >  pred (Graf.size(), make_pair(-1,-1));   //Representem els edges obligats
-        for(int i = 0; i < size; ++i) pred[1+size+i] = make_pair(1+i, 0);
-        
-        queue <int> q;
-        q.push(0);
-        while(not q.empty()){
-            int curr = q.front();
-			
-			
-            for(int i = 0; i < Graf[curr].size(); ++i){
-                edge act = Graf[curr][i];
-                if(not act.usat and pred[act.final].first == -1 and act.final != 0 and act.max > act.min){
-                    pred[act.final].first = curr;
-                    pred[act.final].second = i;
-                    if(act.final != sink) q.push(Graf[act.final][0].final); //l'enllacem directament amb el seu desti
-                    else q.push(act.final);
-                }
-            }
-            q.pop();
-        }
-		
-		
-        if(not (pred[sink].first == -1)){
-            pair <int,int> aux = pred[sink];
-            while(aux.first != -1){
-                pilots[flow].push_back(aux.first);
-                Graf[aux.first][aux.second].min = 1;
-                Graf[aux.first][aux.second].usat = true;
-                aux = pred[aux.first];
-            } 
-        }
-		
-        if(pred[sink].first == -1 or flow == size - 1) stop = true;
-        ++flow;
-    }
+    int flow = maxFlowAlgorithm(Graf);
+    
     
     cout << "Flow: " << flow << endl; //imprimir flow i pilots
     // for(int i = 0; i < flow; ++i){
