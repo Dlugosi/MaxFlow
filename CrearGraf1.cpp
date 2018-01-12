@@ -158,7 +158,8 @@ int main ()
 		else {
 			Pmin = valor+1;
 			
-		}          //O(n^2)
+		}        
+	}
 	
 	/*for (int i=0; i<Graf.size(); i++) {
 		for (int j=0; j<Graf[i].size(); j++) {
