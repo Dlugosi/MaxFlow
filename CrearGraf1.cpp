@@ -2,7 +2,7 @@
  *  CrearGraf1.cpp
  *  
  *
- *  Copyright 2018 GrupXdeAlgorismia. Some rights reserved.
+ *  Copyright 2018 Grup21deAlgorismia. Some rights reserved.
  *
  */
 
