@@ -124,6 +124,65 @@ int maxFlowAlgorithm(vector < vector < edge> > &g){
 	return maxflow;
 }
 
+void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < int > > &Entrada, int &valor){
+    for(int i=0; i<size; i++){  
+		//conectem el source als origens
+        edge nova;
+        nova.final = i+1;
+        nova.capacitat = 1;
+        nova.flow = 0;
+        Graf[source].push_back(nova);
+		//no conectem els origens als destins, sino que els transformem en sinks i sources per complir
+		//el lower bound (no queda aresta). Per fer aixo cal un super sink i un super source que rep i dona tot el fluxe
+	    //primer els nous sink(origens) al supersink (falta el sink original) 
+		
+        nova.final = supersink;
+        nova.capacitat = 1;
+        nova.flow = 0;
+        Graf[i+1].push_back(nova);
+		
+	    //ara el supersource als destins falta conectar al source
+		
+		nova.final = i+size+1;
+        nova.capacitat = 1;
+        nova.flow = 0;
+        Graf[supersource].push_back(nova);
+		
+		//conectem els destins al sink
+        nova.final = sink;
+        nova.capacitat=1;
+        nova.flow = 0;
+        Graf[i+size+1].push_back(nova);
+    }                           //O(n)
+    
+    //ja nomes falta conectar els destins amb els origens adients
+    
+    for(int i = 0; i<size; i++){
+        for (int j=0; j<size; j++){
+			
+            if ((Entrada[i][3]+15<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
+                edge nova;
+                nova.final=j+1;
+                nova.capacitat=1;
+		        nova.flow=0;
+                Graf[i+size+1].push_back(nova);
+            }
+        }
+    }               //O(n^2)
+
+    edge nova;
+    nova.final = supersink;
+    nova.capacitat = valor;
+    nova.flow = 0;
+    Graf[sink].push_back(nova);//conectem sink a supersink
+
+    nova.final = source;
+    nova.capacitat = valor;
+    nova.flow = 0;
+    Graf[supersource].push_back(nova);//conectem sink a supersink
+
+}
+
 int main ()
 {
     // ifstream input;
@@ -189,57 +248,20 @@ int main ()
         Entrada.push_back (Viatge);
     }
 
+    // for(int k = 0; k<Entrada.size(); ++k){
+    //     for(int l = 0; l<4; ++l){
+    //         cout << Entrada[k][l] << " ";
+    //     } 
+    //     cout << endl;
+    // }
+
     int size = Entrada.size();
-    vector < vector < edge> > Graf (2*size+4);
     sink = (2*size)+1;
     source = 0;
     supersource = sink+1;
     supersink = supersource+1;
 	
-    for(int i=0; i<size; i++){  
-		//conectem el source als origens
-        edge nova;
-        nova.final = i+1;
-        nova.capacitat = 1;
-        nova.flow = 0;
-        Graf[source].push_back(nova);
-		//no conectem els origens als destins, sino que els transformem en sinks i sources per complir
-		//el lower bound (no queda aresta). Per fer aixo cal un super sink i un super source que rep i dona tot el fluxe
-	    //primer els nous sink(origens) al supersink (falta el sink original) 
-		
-        nova.final = supersink;
-        nova.capacitat = 1;
-        nova.flow = 0;
-        Graf[i+1].push_back(nova);
-		
-	    //ara el supersource als destins falta conectar al source
-		
-		nova.final = i+size+1;
-        nova.capacitat = 1;
-        nova.flow = 0;
-        Graf[supersource].push_back(nova);
-		
-		//conectem els destins al sink
-        nova.final = sink;
-        nova.capacitat=1;
-        nova.flow = 0;
-        Graf[i+size+1].push_back(nova);
-    }                           //O(n)
     
-    //ja nomes falta conectar els destins amb els origens adients
-    
-    for(int i = 0; i<size; i++){
-        for (int j=0; j<size; j++){
-			
-            if ((Entrada[i][3]+15<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
-                edge nova;
-                nova.final=j+1;
-                nova.capacitat=1;
-		        nova.flow=0;
-                Graf[i+size+1].push_back(nova);
-            }
-        }
-    }               //O(n^2)
 	
 	/*for (int i=0; i<Graf.size(); i++) {
 	 for (int j=0; j<Graf[i].size(); j++) {
@@ -247,41 +269,21 @@ int main ()
 	 }
 	 cout << endl;
 	 }*/
-	bool primer = true;
 	int Pmin=0;
 	int Pmax=size;
     int millorflow = 0;
-    
+    vector < vector < edge> > solucio (2*size+4);
 
-	while(Pmax >= Pmin){
+	while(Pmin <= Pmax){
         int valor = (Pmin+Pmax)/2;
         cout << "valor: " << valor << endl;
-		
-		edge nova;
-        nova.final = supersink;
-        nova.capacitat = valor;
-        nova.flow = 0;
-		if (primer){
-            Graf[sink].push_back(nova);//conectem sink a supersink
-		}
-		else {
-            Graf[sink][Graf[sink].size()-1] = nova;
-        }
-        
-        nova.final = source;
-        nova.capacitat = valor;
-        nova.flow = 0;
-		if (primer){
-            Graf[supersource].push_back(nova);//conectem sink a supersink
-            primer = false;
-		}
-		else {
-            Graf[supersource][Graf[supersource].size()-1] = nova;
-		}
+        vector < vector < edge> > Graf (2*size+4);
+        generarGraf(Graf, size, Entrada, valor);
 				
 		if ((valor+size) == maxFlowAlgorithm(Graf)) { //aixo cal canviarho
 			Pmax = valor -1;//no volem tornar a provar aquest
-			millorflow = valor;
+            millorflow = valor;
+            solucio = Graf;
 			//guardar resposta
 		}
 		else {
