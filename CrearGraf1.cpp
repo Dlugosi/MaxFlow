@@ -126,70 +126,26 @@ int maxFlowAlgorithm(vector < vector < edge> > &g){
 
 int main ()
 {
-    // ifstream input;
-    // input.open ("inputs/instance_100_2_1.air");
-    // if(not input.is_open()) cout << "no s'ha trobat el fitxer" << endl;
-	int num;
+	
+ifstream in("test.txt",ios::in);
+	
 	vector < vector < int > > Entrada; 
-	// string line;
-	// while (not input.eof())
-    // {
-    //     getline(input, line);
-    //     if(line != ""){
-    //         int idx = 0;
-    //         int i = 0;
-    //         string aux = "";
-    //         vector < int > Viatge (4);
-    //         while(line[idx] != '\n'){
-    //             if(line[idx] != ' '){
-    //                 aux.push_back(line[idx]);
-    //             }
-    //             else{
-    //                 int num = 0;
-    //                 int mult = 1;
-    //                 for(int j = aux.size()-1; j>=0;--j){
-    //                     num += (aux[j] - '0')*mult;
-    //                     mult *= 10;
-    //                 }
-    //                 Viatge[i] = num;   //Entrada[x][0] es el origen
-    //                 ++i;
-    //                 aux = "";
-    //             }
-    //             ++idx;
-    //             // // cout << line << endl;
-    //             // // cin >> num;
-    //             // Viatge[1] = line[2] - '0';   //Entrada[x][1] es el desti
-    //             // // cin >> num;
-    //             // Viatge[2] = line[4] - '0';   //Entrada[x][2] es el temps de sortida
-    //             // // cin >> num;
-    //             // Viatge[3] = line[6] - '0';   //Entrada[x][3] es le temps de arrivada
-    //             // //for	(int i=0; i<Viatge.size();i++) cout << Viatge[i] << "  ";
-    //             // //cout << endl;
-    //         }
-    //         Entrada.push_back (Viatge);
-    //     }
-    // }   //<O(n);
-    // input.close();
-    
-    // for(int k = 0; k<Entrada.size(); ++k){
-    //     for(int l = 0; l<4; ++l){
-    //         cout << Entrada[k][l] << " ";
-    //     } 
-    //     cout << endl;
-    // }
-    while(cin >> num){
-        vector < int > Viatge (4);
-        Viatge[0] = num;   //Entrada[x][1] es el desti
-        cin >> num;
-        Viatge[1] = num;   //Entrada[x][1] es el desti
-        cin >> num;
-        Viatge[2] = num;   //Entrada[x][2] es el temps de sortida
-        cin >> num;
-        Viatge[3] = num;
-        Entrada.push_back (Viatge);
-    }
-
-    int size = Entrada.size();
+	int num;
+	while (in >> num)
+    {
+            vector < int > Viatge (4);
+            Viatge[0] = num;   //Entrada[x][0] es el origen
+		in >> num;
+            Viatge[1] = num;   //Entrada[x][1] es el desti
+		in >> num;
+		Viatge[2] = num;   //Entrada[x][2] es el temps de sortida
+		in >> num;
+            Viatge[3] = num;   //Entrada[x][3] es le temps de arrivada
+            Entrada.push_back (Viatge);
+		cout <<"viatge es " << Viatge[0] << " "<< Viatge[1] << " "<< Viatge[2] << " "<< Viatge[3] << endl;
+    }   //<O(n);
+    in.close();
+e = Entrada.size();
     vector < vector < edge> > Graf (2*size+4);
     sink = (2*size)+1;
     source = 0;
