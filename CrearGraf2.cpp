@@ -156,7 +156,13 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
     }                           //O(n)
     
     //ja nomes falta conectar els destins amb els origens adients
-    
+    bool transbord[size][size];
+      for (int i=0; i<size; i++){
+ 	for(int j = 0; j<size; j++){
+ 		transbord[i][j]=false;
+	}
+      } 
+	
     for(int i = 0; i<size; i++){
         for (int j=0; j<size; j++){
 			
@@ -167,8 +173,34 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
 		        nova.flow=0;
                 Graf[i+size+4].push_back(nova);
             }
-        }
-    }               //O(n^2)
+        }//O(n^2)
+	    //es la unica diferencia amb la versio 1
+    //ara per opcio amb transport de crews
+ 
+
+	bool transbords = true;
+	while (transbords){
+	transbords=false;//per poder sortir abans si eso del bucle
+	for(int i = 0; i<size; i++){
+            for (int j=0; j<size; j++){
+               	 if (transbord[i][j]==true){
+                    for(int k=0; k<size; k++){
+                        if ((transbord[j][k])&&(!transbord[i][k])){
+                            transbords=true;
+                            edge nova;
+                            nova.final=k+1;
+                            nova.min=0;
+                            nova.max=1;
+                            nova.usat=0;
+                            Graf[i+size+4].push_back(nova);
+                            transbord[i][k]=true;
+                        }
+                    }
+                }
+            }
+        }        
+	}//pitjor cas de n^4 :(
+    }              
 
     edge nova;
     nova.final = supersink;
@@ -181,34 +213,6 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
     nova.flow = 0;
     Graf[supersource].push_back(nova);//conectem sink a supersink
 
-    bool transbord[size][size];
-    for (int i=0; i<size; i++){
-   for(int j = 0; j<size; j++){
-       transbord[i][j]=false;
-  }
-    }
-
-  bool transbords = true;
-  while (transbords){
-  transbords=false;//per poder sortir abans si eso del bucle
-  for(int i = 0; i<size; i++){
-          for (int j=0; j<size; j++){
-                  if (transbord[i][j]==true){
-                  for(int k=0; k<size; k++){
-                      if ((transbord[j][k])&&(!transbord[i][k])){
-                          transbords=true;
-                          edge nova;
-                          nova.final=k+4;
-                          nova.flow=0;
-                          nova.capacitat=1;
-                          Graf[i+size+4].push_back(nova);
-                          transbord[i][k]=true;
-                      }
-                  }
-              }
-          }
-      }        
-  }//pitjor cas de n^4 :(
 }
 
 void volsPilot(vector < vector < edge> >& g, vector<bool>& vis, int u, int &size) {
@@ -315,4 +319,7 @@ int main ()
 	float f = clock()-Timestart;
 	cout <<"La execucio ha tardat" <<clock()-Timestart <<"ticks,"<< f/CLOCKS_PER_SEC << "segons"<<endl;
 	
+}
+
+
 }
