@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <time.h>
 
 using namespace std;
 
@@ -184,8 +185,8 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
 
 int main ()
 {
-	
-ifstream in("inputs/instance_100_2_1.air",ios::in);
+	clock_t Timestart = clock();
+	ifstream in("inputs/instance_100_2_1.air",ios::in);
 	
 	vector < vector < int > > Entrada; 
 	int num;
@@ -252,5 +253,7 @@ ifstream in("inputs/instance_100_2_1.air",ios::in);
     //     for(int j = pilots[i].size() - 2; j >= 0; ++j) cout << " " << pilots[i][j];
     //     cout << endl;
     // }
+	float f = clock()-Timestart;
+	cout <<"La execucio ha tardat" <<clock()-Timestart <<"ticks,"<< f/CLOCKS_PER_SEC << "segons"<<endl;
 	
 }
