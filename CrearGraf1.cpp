@@ -15,6 +15,11 @@
 
 using namespace std;
 
+int sink;
+int source;
+int supersource;
+int supersink;
+
 struct edge{    //es un vol
     int final;  //al que esta conectat
     int min;
@@ -53,8 +58,11 @@ int main ()
                             
     int size = Entrada.size();
     vector < vector < edge> > Graf (2*size+2);
-    int sink = (2*size)+1;
-	
+    sink = (2*size)+1;
+    source = 0;
+    supersource = sink*1;
+    supersink = supersource*1
+
     for(int i=0; i<size; i++){  
 		//conectem el font als origens
         edge nova;
