@@ -2,7 +2,7 @@
  *  CrearGraf1.cpp
  *  
  *
- *  Copyright 2018 GrupXdeAlgorismia. Some rights reserved.
+ *  Copyright 2018 Grup21deAlgorismia. Some rights reserved.
  *
  */
 
@@ -83,13 +83,12 @@ void augmentaFlow(vector < vector < edge> >& r, const vector <int>& path, int bo
 
 
 int findPath(const vector < vector < edge> >& r, vector <int>& path) {
-    int bottleneck = 0;
 	path = vector <int> (r.size(),-1);
 	vector <int> cap(r.size(),0);
 	queue<int> vertexs;
 	vertexs.push(supersource);
-	cap[0] = 5000000;
-	path[0] = -2;
+	cap[supersource] = 5000000;
+	path[supersource] = -2;
 	while (not vertexs.empty()) {
 		int ini = vertexs.front();
 		vertexs.pop();
@@ -104,7 +103,7 @@ int findPath(const vector < vector < edge> >& r, vector <int>& path) {
 			}
         }
 	}
-    return bottleneck;
+    return 0;
 }
 
 int maxFlowAlgorithm(vector < vector < edge> > &g){
@@ -185,77 +184,27 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
 
 int main ()
 {
-    // ifstream input;
-    // input.open ("inputs/instance_100_2_1.air");
-    // if(not input.is_open()) cout << "no s'ha trobat el fitxer" << endl;
-	int num;
+	
+ifstream in("inputs/instance_100_2_1.air",ios::in);
+	
 	vector < vector < int > > Entrada; 
-	// string line;
-	// while (not input.eof())
-    // {
-    //     getline(input, line);
-    //     if(line != ""){
-    //         int idx = 0;
-    //         int i = 0;
-    //         string aux = "";
-    //         vector < int > Viatge (4);
-    //         while(line[idx] != '\n'){
-    //             if(line[idx] != ' '){
-    //                 aux.push_back(line[idx]);
-    //             }
-    //             else{
-    //                 int num = 0;
-    //                 int mult = 1;
-    //                 for(int j = aux.size()-1; j>=0;--j){
-    //                     num += (aux[j] - '0')*mult;
-    //                     mult *= 10;
-    //                 }
-    //                 Viatge[i] = num;   //Entrada[x][0] es el origen
-    //                 ++i;
-    //                 aux = "";
-    //             }
-    //             ++idx;
-    //             // // cout << line << endl;
-    //             // // cin >> num;
-    //             // Viatge[1] = line[2] - '0';   //Entrada[x][1] es el desti
-    //             // // cin >> num;
-    //             // Viatge[2] = line[4] - '0';   //Entrada[x][2] es el temps de sortida
-    //             // // cin >> num;
-    //             // Viatge[3] = line[6] - '0';   //Entrada[x][3] es le temps de arrivada
-    //             // //for	(int i=0; i<Viatge.size();i++) cout << Viatge[i] << "  ";
-    //             // //cout << endl;
-    //         }
-    //         Entrada.push_back (Viatge);
-    //     }
-    // }   //<O(n);
-    // input.close();
-    
-    // for(int k = 0; k<Entrada.size(); ++k){
-    //     for(int l = 0; l<4; ++l){
-    //         cout << Entrada[k][l] << " ";
-    //     } 
-    //     cout << endl;
-    // }
-    while(cin >> num){
+	int num;
+	while (in >> num)
+    {
         vector < int > Viatge (4);
-        Viatge[0] = num;   //Entrada[x][1] es el desti
-        cin >> num;
+        Viatge[0] = num;   //Entrada[x][0] es el origen
+		in >> num;
         Viatge[1] = num;   //Entrada[x][1] es el desti
-        cin >> num;
-        Viatge[2] = num;   //Entrada[x][2] es el temps de sortida
-        cin >> num;
-        Viatge[3] = num;
+		in >> num;
+		Viatge[2] = num;   //Entrada[x][2] es el temps de sortida
+		in >> num;
+        Viatge[3] = num;   //Entrada[x][3] es le temps de arrivada
         Entrada.push_back (Viatge);
-    }
-
-    // for(int k = 0; k<Entrada.size(); ++k){
-    //     for(int l = 0; l<4; ++l){
-    //         cout << Entrada[k][l] << " ";
-    //     } 
-    //     cout << endl;
-    // }
-
+		// cout <<"viatge es " << Viatge[0] << " "<< Viatge[1] << " "<< Viatge[2] << " "<< Viatge[3] << endl;
+    }   //<O(n);
+    in.close();
     int size = Entrada.size();
+    vector < vector < edge> > Graf (2*size+4);
     sink = (2*size)+1;
     source = 0;
     supersource = sink+1;
@@ -276,11 +225,10 @@ int main ()
 
 	while(Pmin <= Pmax){
         int valor = (Pmin+Pmax)/2;
-        cout << "valor: " << valor << endl;
         vector < vector < edge> > Graf (2*size+4);
         generarGraf(Graf, size, Entrada, valor);
-				
-		if ((valor+size) == maxFlowAlgorithm(Graf)) { //aixo cal canviarho
+        int flow = maxFlowAlgorithm(Graf);
+		if ((valor+size) == flow) { //aixo cal canviarho
 			Pmax = valor -1;//no volem tornar a provar aquest
             millorflow = valor;
             solucio = Graf;
