@@ -198,7 +198,7 @@ int main ()
                 edge nova;
                 nova.final=j+1;
                 nova.capacitat=1;
-				nova.flow=0;
+		        nova.flow=0;
                 Graf[i+size+1].push_back(nova);
             }
         }
@@ -230,7 +230,6 @@ int main ()
 		else {
 			Graf[sink][Graf[sink].size()-1] = nova;
 		}
-		edge nova;
         nova.final = source;
         nova.capacitat = valor;
         nova.flow = 0;
@@ -250,7 +249,8 @@ int main ()
 		else {
 			Pmin = valor+1;
 			
-		}          //O(n^2)
+		}        
+	}
 	
 	/*for (int i=0; i<Graf.size(); i++) {
 		for (int j=0; j<Graf[i].size(); j++) {
