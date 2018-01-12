@@ -7,6 +7,8 @@
  */
 
 #include <iostream>
+#include <fstream>
+#include <string>
 #include <vector>
 #include <queue>
 #include <utility>
@@ -23,22 +25,32 @@ struct edge{    //es un vol
 
 int main ()
 {
+    ifstream input;
+    input.open ("inputs/instance_100_2_1.air");
+    if(not input.is_open()) cout << "no s'ha trobat el fitxer" << endl;
+
 	vector < vector < int > > Entrada; 
-	int num;
-	while (cin >> num)
+	string line;
+	while (not input.eof())
     {
-		vector < int > Viatge (4);
-		Viatge[0] = num;   //Entrada[x][0] es el origen
-		cin >> num;
-		Viatge[1] = num;   //Entrada[x][1] es el desti
-		cin >> num;
-		Viatge[2] = num;   //Entrada[x][2] es el temps de sortida
-		cin >> num;
-		Viatge[3] = num;   //Entrada[x][3] es le temps de arrivada
+        getline(input, line);
+        if(line != ""){
+            // cout << line << endl;
+            vector < int > Viatge (4);
+            Viatge[0] = line[0] - '0';   //Entrada[x][0] es el origen
+            // cin >> num;
+            Viatge[1] = line[2] - '0';   //Entrada[x][1] es el desti
+            // cin >> num;
+            Viatge[2] = line[4] - '0';   //Entrada[x][2] es el temps de sortida
+            // cin >> num;
+            Viatge[3] = line[6] - '0';   //Entrada[x][3] es le temps de arrivada
 		//for	(int i=0; i<Viatge.size();i++) cout << Viatge[i] << "  ";
 		//cout << endl;
-		Entrada.push_back (Viatge);
-    }                           //<O(n);
+            Entrada.push_back (Viatge);
+        }
+    }   //<O(n);
+    input.close();
+                            
     int size = Entrada.size();
     vector < vector < edge> > Graf (2*size+2);
     int sink = (2*size)+1;
