@@ -1,10 +1,10 @@
 /*
-*  CrearGraf1.cpp
-*  
-*
-*  Copyright 2018 Grup21deAlgorismia. Some rights reserved.
-*
-*/
+ *  CrearGraf1.cpp
+ *  
+ *
+ *  Copyright 2018 Grup21deAlgorismia. Some rights reserved.
+ *
+ */
 
 #include <iostream>
 #include <stdlib.h> 
@@ -77,7 +77,7 @@ void augmentaFlow(vector < vector < edge> >& r, const vector <int>& path, int bo
 		r[act][p1].flow += bottleneck;
 		int p2 = findPos(r,ini,act);
 		r[ini][p2].flow -= bottleneck;
-		
+
 		act = path[act];
 	}
 }
@@ -129,13 +129,20 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
 		//conectem el source als origens
         edge nova;
         nova.final = i+4;
-        nova.capacitat = 1;
+        nova.capacitat = valor;
         nova.flow = 0;
         Graf[source].push_back(nova);
 		//no conectem els origens als destins, sino que els transformem en sinks i sources per complir
 		//el lower bound (no queda aresta). Per fer aixo cal un super sink i un super source que rep i dona tot el fluxe
 	    //primer els nous sink(origens) al supersink (falta el sink original) 
-		
+        
+        
+
+        nova.final = i+4+size;
+        nova.capacitat = valor - 1;
+        nova.flow = 0;
+        Graf[i+4].push_back(nova);
+
         nova.final = supersink;
         nova.capacitat = 1;
         nova.flow = 0;
@@ -157,11 +164,11 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
     
     //ja nomes falta conectar els destins amb els origens adients
     bool transbord[size][size];
-	for (int i=0; i<size; i++){
-		for(int j = 0; j<size; j++){
-			transbord[i][j]=false;
-		}
-	} 
+      for (int i=0; i<size; i++){
+ 	for(int j = 0; j<size; j++){
+ 		transbord[i][j]=false;
+	}
+      } 
 	
     for(int i = 0; i<size; i++){
         for (int j=0; j<size; j++){
@@ -169,50 +176,50 @@ void generarGraf( vector < vector < edge> > &Graf, int &size, vector < vector < 
             if ((Entrada[i][3]+15<Entrada[j][2])&&(Entrada[i][1]==Entrada[j][0])){
                 edge nova;
                 nova.final=j+4;
-                nova.capacitat=1;
+                nova.capacitat=valor;
 		        nova.flow=0;
                 Graf[i+size+4].push_back(nova);
-				transbord[i][j]=true;
+		transbord[i][j]=true;
             }
         }//O(n^2)
 	    //es la unica diferencia amb la versio 1
-		//ara per opcio amb transport de crews
-		
-		
-		bool transbords = true;
-		while (transbords){
-			transbords=false;//per poder sortir abans si eso del bucle
-			for(int i = 0; i<size; i++){
-				for (int j=0; j<size; j++){
-					if (transbord[i][j]==true){
-						for(int k=0; k<size; k++){
-							if ((transbord[j][k])&&(!transbord[i][k])){
-								transbords=true;
-								edge nova;
-								nova.final=k+1;
-								nova.flow=0;
-								nova.capacitat=1;
-								Graf[i+size+4].push_back(nova);
-								transbord[i][k]=true;
-							}
-						}
-					}
-				}
-			}        
-		}//pitjor cas de n^4 :(
+        //ara per opcio amb transport de crews
+    
+
+        // bool transbords = true;
+        // while (transbords){
+        // transbords=false;//per poder sortir abans si eso del bucle
+        // for(int i = 0; i<size; i++){
+        //         for (int j=0; j<size; j++){
+        //             if (transbord[i][j]==true){
+        //                 for(int k=0; k<size; k++){
+        //                     if ((transbord[j][k])&&(!transbord[i][k])){
+        //                         transbords=true;
+        //                         edge nova;
+        //                         nova.final=k+4;
+        //                         nova.flow=0;
+        //                         nova.capacitat=1;
+        //                         Graf[i+size+4].push_back(nova);
+        //                         transbord[i][k]=true;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }        
+        // }//pitjor cas de n^4 :(
     }              
-	
+
     edge nova;
     nova.final = supersink;
     nova.capacitat = valor;
     nova.flow = 0;
     Graf[sink].push_back(nova);//conectem sink a supersink
-	
+
     nova.final = source;
     nova.capacitat = valor;
     nova.flow = 0;
     Graf[supersource].push_back(nova);//conectem sink a supersink
-	
+
 }
 
 void volsPilot(vector < vector < edge> >& g, vector<bool>& vis, int u, int &size) {
@@ -241,7 +248,7 @@ void volsPilot(vector < vector < edge> >& g, vector<bool>& vis, int u, int &size
 void printVols(vector < vector < edge> >& g, int& size) {
 	vector<bool> visit(size,false);
 	for (auto e : g[source]) {
-		
+
 		if (e.flow) volsPilot(g,visit,e.final,size);
 	}
 }
@@ -249,7 +256,7 @@ void printVols(vector < vector < edge> >& g, int& size) {
 int main ()
 {
 	clock_t Timestart = clock();
-	ifstream in("test.txt",ios::in);
+	ifstream in("inputs/instance_100_3_2.air",ios::in);
 	
 	vector < vector < int > > Entrada; 
 	int num;
@@ -286,7 +293,7 @@ int main ()
 	int Pmax=size;
     int millorflow = 0;
     vector < vector < edge> > solucio (2*size+4);
-	
+
 	while(Pmin <= Pmax){
         int valor = (Pmin+Pmax)/2;
         vector < vector < edge> > Graf (2*size+4);
@@ -305,11 +312,11 @@ int main ()
     cout << "Flow: " << millorflow << endl; //imprimir flow i pilots
 	printVols(solucio, size);
 	/*for (int i=0; i<Graf.size(); i++) {
-	 for (int j=0; j<Graf[i].size(); j++) {
-	 cout << Graf[i][j].final <<" ";
-	 }
-	 cout << endl;
-	 }*/    
+		for (int j=0; j<Graf[i].size(); j++) {
+			cout << Graf[i][j].final <<" ";
+		}
+		cout << endl;
+	}*/    
     
     // for(int i = 0; i < flow; ++i){
     //     cout << pilots[i][pilots[i].size() - 1];
